@@ -26,7 +26,7 @@ export default {
     },
   },
   actions: {
-    LOAD_CATEGORIES({ commit, rootGetters }, api) {
+    async LOAD_CATEGORIES({ commit, rootGetters }, api) {
       //   console.log(id);
       let token = rootGetters["login/getToken"];
       //   const bodySent = { id: parseInt(id) };

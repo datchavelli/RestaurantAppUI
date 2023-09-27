@@ -79,13 +79,18 @@ export default {
   width: 25%;
   padding: 5%;
   padding-left: 5%;
-  margin-left: 15%;
+  margin-left: 35%;
   background: #00353b;
+}
+
+.loginbtn {
+  margin-top: 2.5%;
 }
 
 @media only screen and (max-width: 600px) {
   #login-form {
     width: 62%;
+    margin-left: 15%;
   }
 }
 </style>

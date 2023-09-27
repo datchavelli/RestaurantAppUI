@@ -1,93 +1,102 @@
 <template>
   <div>
     <div class="card">
-      {{ table.tableNumber }} - {{ table.status }} - for
-      {{ table.capacity }} persons
+      <div class="table-title">
+        {{ table.tableNumber }} - <strong>{{ table.status }}</strong> - for
+        <strong>{{ table.capacity }}</strong> guests
+      </div>
       <div>
-        <button class="btn btn-secondary" v-on:click="changeState">
+        <button
+          class="btn btn-secondary addToOrderBtn"
+          v-on:click="changeState"
+        >
           Add +
         </button>
       </div>
-    </div>
-    <div class="card" v-if="this.show == true">
-      <h3>Add to the order</h3>
-      <div>
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-          <li
-            class="nav-item"
-            role="presentation"
-            v-for="(category, index) in categories.items"
-            :key="index"
-            :value="category.id"
-          >
-            <button
-              class="nav-link"
-              :id="category.categoryName.trim().replace(' ', '') + '-tab'"
-              data-bs-toggle="tab"
-              :data-bs-target="
-                '#' + category.categoryName.trim().replace(' ', '')
-              "
-              type="button"
-              role="tab"
-              aria-controls="home"
-              aria-selected="true"
-            >
-              {{ category.categoryName }}
-            </button>
-          </li>
-        </ul>
-        <div class="tab-content" id="myTabContent">
-          <div
-            v-for="(category, index) in categories.items"
-            :key="index"
-            :value="category"
-            class="tab-pane fade"
-            :id="category.categoryName.trim().replace(' ', '')"
-            role="tabpanel"
-            :aria-labelledby="
-              category.categoryName.trim().replace(' ', '') + '- tab'
-            "
-          >
-            <button
-              class="btn btn-secondary"
-              v-for="(menuItem, index) in category.menuItems"
+      <div v-if="this.show == true">
+        <h3>Add to the order</h3>
+        <div>
+          <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li
+              class="nav-item"
+              role="presentation"
+              v-for="(category, index) in categories.items"
               :key="index"
-              :value="menuItem"
-              @click="
-                showModal = true;
-                sendItem(menuItem);
+              :value="category.id"
+            >
+              <button
+                class="nav-link"
+                :id="category.categoryName.trim().replaceAll(' ', '') + '-tab'"
+                data-bs-toggle="tab"
+                :data-bs-target="
+                  '#' + category.categoryName.trim().replaceAll(' ', '')
+                "
+                type="button"
+                role="tab"
+                aria-controls="home"
+                aria-selected="true"
+              >
+                {{ category.categoryName }}
+              </button>
+            </li>
+          </ul>
+          <div class="tab-content" id="myTabContent">
+            <div
+              v-for="(category, index) in categories.items"
+              :key="index"
+              :value="category.id"
+              class="tab-pane fade"
+              :id="category.categoryName.trim().replaceAll(' ', '')"
+              role="tabpanel"
+              :aria-labelledby="
+                category.categoryName.trim().replaceAll(' ', '') + '-tab'
               "
             >
-              {{ menuItem.name + " - " + menuItem.price }}
-            </button>
-          </div>
-          <a-modal v-if="showModal" @close="closeModal" :menuItem="this.item">
-            <div slot="footer">
-              <button class="btn btn-secondary" @click="addToOrder">
-                Add to Order
-              </button>
+              <div v-if="category.menuItems.length > 0" class="mealButtons">
+                <button
+                  class="btn btn-secondary menuItemBtn"
+                  v-for="(menuItem, index) in category.menuItems"
+                  :key="index"
+                  :value="menuItem.id"
+                  @click="
+                    showModal = true;
+                    sendItem(menuItem);
+                  "
+                >
+                  {{ menuItem.name + " - " + menuItem.price }}.00 RSD
+                </button>
+              </div>
             </div>
-          </a-modal>
+            <a-modal v-if="showModal" @close="closeModal" :menuItem="this.item">
+              <div slot="footer">
+                <button class="btn btn-secondary" @click="addToOrder">
+                  Add to Order
+                </button>
+              </div>
+            </a-modal>
+          </div>
         </div>
       </div>
-    </div>
-    <div>
-      <a-orderitems
-        :orders="orders"
-        @removeItem="removeItemFromOrder"
-        :key="renderComponent"
-      ></a-orderitems>
-    </div>
-    <div class="card">
-      <h3 class="float-right">Total: {{ orders.totalAmount }}.00</h3>
       <div>
-        <button
-          class="btn btn-primary"
-          v-on:click="payment"
-          v-if="orders.status == 'Pending'"
-        >
-          Payment
-        </button>
+        <a-orderitems
+          :orders="orders"
+          @removeItem="removeItemFromOrder"
+          :key="renderComponent"
+        ></a-orderitems>
+      </div>
+      <div class="card">
+        <h3 class="float-right totalAmountPrint">
+          Total: {{ orders.totalAmount }}.00 RSD
+        </h3>
+        <div class="float-right">
+          <button
+            class="btn btn-primary payment"
+            v-on:click="payment(orders.totalAmount)"
+            v-if="orders.status == 'Pending'"
+          >
+            Payment
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -158,19 +167,23 @@ export default {
         console.log(resp.status);
       }, 1500);
     },
-    payment() {
-      let orderStatus = "Completed";
-      let orderId = this.$route.params.order;
-      let tableNumber = this.$route.params.table;
-      console.log(tableNumber);
-      let data = {
-        orderStatus: orderStatus,
-        orderId: orderId,
-      };
-      let response = this.completeOrder(data);
-      alert("Payment complete", response);
-      this.closeTable(tableNumber);
-      this.$router.push("/");
+    payment(total) {
+      if (total != 0) {
+        let orderStatus = "Completed";
+        let orderId = this.$route.params.order;
+        let tableNumber = this.$route.params.table;
+        console.log(tableNumber);
+        let data = {
+          orderStatus: orderStatus,
+          orderId: orderId,
+        };
+        let response = this.completeOrder(data);
+        alert("Payment complete", response);
+        this.closeTable(tableNumber);
+        this.$router.push("/");
+      } else {
+        alert("This order is empty!");
+      }
     },
     sendItem(item) {
       this.item = item;
@@ -226,5 +239,29 @@ export default {
 <style lang="stylus" scoped>
 .quantity-label {
   color: black;
+}
+
+.mealButtons {
+  padding: 1.5%;
+}
+
+.addToOrderBtn {
+  margin-left: 0.5%;
+}
+
+.menuItemBtn {
+  margin-left: 0.5%;
+}
+
+.totalAmountPrint {
+  padding: 0.5%;
+}
+
+.payment {
+  margin: 0% 0.5% 0.5%;
+}
+
+.table-title {
+  padding: 0.5%;
 }
 </style>

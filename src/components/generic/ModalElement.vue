@@ -5,9 +5,9 @@
       <div class="modal-container">
         <div class="modal-header">
           <slot name="header">
-            {{
-              "#" + menuItem.id + " - " + menuItem.name + " - " + menuItem.price
-            }}
+            {{ "#" + menuItem.id + " - " + menuItem.name + " - " }}
+            <br />
+            {{ menuItem.price + ".00 RSD" }}
           </slot>
         </div>
 

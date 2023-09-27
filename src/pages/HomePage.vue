@@ -1,10 +1,10 @@
 <template>
   <div>
     <div class="card">
-      <h3>Tables</h3>
+      <h3 class="tablesTitle">Tables</h3>
       <div class="container">
         <table class="table table-striped">
-          <thead>
+          <thead class="table-dark">
             <tr>
               <th scope="col">Table Number</th>
               <th scope="col">Capacity</th>
@@ -16,7 +16,7 @@
           <tbody>
             <tr v-for="(table, index) in tables" :key="index" :value="table">
               <th scope="row">{{ table.tableNumber }}</th>
-              <td>{{ table.capacity }} persons</td>
+              <td>{{ table.capacity }} guests</td>
               <td v-if="table.status == 'Reserved'">
                 {{ table.status }} (by:{{ table.receptionist }})
               </td>
@@ -107,4 +107,8 @@ export default {
 };
 </script>
 
-<style lang="stylus" scoped></style>
+<style lang="stylus" scoped>
+.tablesTitle {
+  padding-left: 11%;
+}
+</style>

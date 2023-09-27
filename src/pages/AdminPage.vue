@@ -31,7 +31,7 @@
               aria-controls="menuitems"
               aria-selected="false"
             >
-              Menu Items
+              Meals
             </button>
           </li>
           <li class="nav-item" role="presentation">
